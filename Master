@@ -1,0 +1,415 @@
+
+### NYU ITS Macintosh Printer Configuration Utility ### 
+### Script Created by Nana Kumi 2015 ###
+### IP Address Blocked for Security Reasons ###
+
+program_entry()
+
+###### *******PROGRAM ENTRY******* ######
+
+
+on program_entry()
+	
+	display dialog " What would you like to do?" buttons {"Install Printers", "Remove all Printers", "Exit"} default button 1
+	if button returned of result = "Install Printers" then
+		
+		osiris_start()
+		
+	else
+		if button returned of result = "Remove all Printers" then
+			
+			remove_printers()
+			
+		else
+			
+			if button returned of result = "Exit" then
+				
+				return "Cancel Button Pressed"
+				
+			end if
+			
+		end if
+		
+	end if
+	
+end program_entry
+### FUNCTION FOR DISPLAYING PRINTER SUCCESS NOTIFICATION ###
+
+on success()
+	
+	display dialog "Printer(s) Installed Succesfully"
+	
+	delay 2
+	
+end success
+
+
+### FUNCTION FOR REMOVING ALL PRINTERS FROM PRINTER QUEUE ###
+
+on remove_printers()
+	
+	display dialog "Are You Sure you want to Remove ALL Printers?" buttons {"Yes", "No"} default button 2
+	
+	if button returned of result = "Yes" then
+		
+		do shell script "lpstat -p | grep printer | cut -d' ' -f2 | xargs -I{} lpadmin -x {}"
+		
+		program_entry()
+	else
+		if button returned of result = "No" then
+			
+			program_entry()
+			
+		end if
+	end if
+	
+	
+end remove_printers
+
+
+
+
+
+on osiris_start() ##Script Function Start##
+	
+	
+	
+	######INITIALIZATION OF WORKING DIRECTORY AND LANIER DRIVER LOCATION VARIABLES######
+	
+	set UnixPath to POSIX path of ((path to me as text) & "::") --get path to parent folder
+	set vol1 to UnixPath & "Osiris.app/LanierDrivers/LanierVol1.pkg" as text
+	set vol2 to UnixPath & "Osiris.app/LanierDrivers/LanierVol2.pkg" as text
+	set vol3 to UnixPath & "Osiris.app/LanierDrivers/LanierVol3.pkg" as text
+	set vol4 to UnixPath & "Osiris.app/LanierDrivers/Laniermp3054.pkg" as text
+	
+	
+	
+	######BEGIN CHOOSE LOCATION######	
+	
+	
+	
+	
+	set chosen_location to choose from list {"Bobst Library", "1 Washington Square North", "NYU Central HVAC Shop", "10 Astor Place", "Human Resources 17th Street 1st Floor", "Internal Audit 17th Street 3rd Floor"} with prompt "Select the Location Below"
+	if chosen_location is false then
+		return program_entry()
+		
+		######BOBST LIBRARY LOCATION######	
+		
+	else if chosen_location contains "Bobst Library" then
+		set chosen_bllocation to choose from list {"Office Of EVP 12th Floor Room 1220", "Office of Provost 12th Floor Room 1260", "Office of Provost 12th Floor Room 1246", "Office of Legal Councel 11th Floor", "Office of Provost 11th Floor Suite 1100"} with prompt "Selection the Department"
+		
+		if chosen_bllocation is false then
+			return osiris_start()
+			
+			
+			
+			
+			
+			##Office Of EVP 12th Floor Room 1220##
+			
+		else if chosen_bllocation contains "Office Of EVP 12th Floor Room 1220" then
+			
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503A' -E -v lpd://'XXX.XX.164.36' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'EVP-LANIERMPC5503-RM1220'"
+			
+			success()
+			
+			##Office of Provost 12th Floor Room 1260##	
+			
+		else if chosen_bllocation contains "Office of Provost 12th Floor Room 1260" then
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503B' -E -v lpd://'XXX.XX.164.37' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'PROV-LANIERMPC5503-RM1260'"
+			
+			success()
+			
+			##Office of Provost 12th Floor Room 1246##	
+			
+		else if chosen_bllocation contains "Office of Provost 12th Floor Room 1246" then
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503' -E -v lpd://'XXX.XX.164.38' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'PROV-LANIERMPC5503-RM1246'"
+			
+			success()
+			
+			##Office of Legal Councel 11th Floor##	
+			
+		else if chosen_bllocation contains "Office of Legal Councel 11th Floor" then
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol1) & " -target /" with administrator privileges
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP7520SP' -E -v lpd://'XXX.XX.164.39' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 7502' -D 'OLC-LANIERMP7502SP-11FL'"
+			
+			success()
+			
+			##Office of Provost 11th Floor Suite 1100##	
+			
+		else if chosen_bllocation contains "Office of Provost 11th Floor Suite 1100" then
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC4503' -E -v lpd://'XXX.XX.164.40' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C4503' -D 'PROV-LANIERMPC4503-11FL'"
+			
+			success()
+			
+		end if
+		
+		######BEGIN 1 WASHINGTON SQAURE NORTH LOCATION######	
+		
+	else if chosen_location contains "1 Washington Square North" then
+		
+		set chosen_silversetup to choose from list {"Silver Setup WITHOUT Deans Office Printers", "Silver Setup WITH Deans Office Printers"} with prompt "Choose the Appropriate Setup"
+		if chosen_silversetup is false then
+			return osiris_start()
+			
+			##Silver setup WITHOUT Deans Office Printers##	
+			
+		else if chosen_silversetup contains "Silver Setup WITHOUT Deans Office Printers" then
+			
+			
+			##Driver Installation##
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol1) & " -target /" with administrator privileges
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol2) & " -target /" with administrator privileges
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+			
+			
+			
+			##Adding Printers##
+			
+			##RM 106##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPA' -E -v lpd://'XXX.XX.225.122' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'Silver-LANIERMP5002SP-RM106'"
+			
+			##RM G04##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPB' -E -v lpd://'XXX.XX.225.115' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'Silver-LANIERMP5002SP-RMG04A'"
+			
+			##RM G07##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPC' -E -v lpd://'XXX.XX.225.116' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'Silver-LANIERMP5002SP-RMG07'"
+			
+			##RM 406##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPD' -E -v lpd://'XXX.XX.225.117' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'Silver-LANIERMP5002SP-RM406'"
+			
+			##RM323##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPE' -E -v lpd://'XXX.XX.225.118' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'Silver-LANIERMP5002SP-RM323'"
+			
+			##RM 208##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP7502SP' -E -v lpd://'XXX.XX.225.119' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 7502' -D 'Silver-LANIERMP7502SP-RM208'"
+			
+			##RM 212##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503' -E -v lpd://'XXX.XX.225.114' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'Silver-LANIERMPC5503-RM212'"
+			
+			##RM 102A##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP4002SP' -E -v lpd://'XXX.XX.225.121' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 4002' -D 'Silver-LANIERMP4002SP-RM102A'"
+			
+			success()
+			
+			
+			##Silver setup WITH Deans Office Printers##
+			
+		else if chosen_silversetup contains "Silver Setup WITH Deans Office Printers" then
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol1) & " -target /" with administrator privileges
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol2) & " -target /" with administrator privileges
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+			
+			##Adding Printers##
+			
+			##RM 106##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPA' -E -v lpd://'XXX.XX.225.122' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'Silver-LANIERMP5002SP-RM106'"
+			
+			##RM G04##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPB' -E -v lpd://'XXX.XX.225.115' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'Silver-LANIERMP5002SP-RMG04A'"
+			
+			##RM G07##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPC' -E -v lpd://'XXX.XX.225.116' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'Silver-LANIERMP5002SP-RMG07'"
+			
+			##RM 406##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPD' -E -v lpd://'XXX.XX.225.117' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'Silver-LANIERMP5002SP-RM406'"
+			
+			##RM323##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPE' -E -v lpd://'XXX.XX.225.118' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'Silver-LANIERMP5002SP-RM323'"
+			
+			##RM 208##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP7502SP' -E -v lpd://'XXX.XX.225.119' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 7502' -D 'Silver-LANIERMP7502SP-RM208'"
+			
+			##RM 212##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503' -E -v lpd://'XXX.XX.225.114' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'Silver-LANIERMPC5503-RM212'"
+			
+			##RM 102A##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP4002SP' -E -v lpd://'XXX.XX.225.121' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 4002' -D 'Silver-LANIERMP4002SP-RM102A'"
+			
+			
+			##RM 213 (Dean's Office)##
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC4503' -E -v lpd://'XXX.XX.225.120' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C4503' -D 'Silver-LANIERMPC4503-RM213'"
+			
+			
+			success()
+			
+		end if
+		
+		######END 1 WASHINGTON SQAURE NORTH LOCATION######	
+		
+		
+		###### NYU CENTRAL HVAC SHOP ######		
+		
+	else if chosen_location contains "NYU Central HVAC Shop" then
+		set chosen_hvaclocation to choose from list {"100 Washington Square East Room SB07", "100 Washington Square East Room 303"} with prompt "Selection the Department"
+		
+		if chosen_hvaclocation is false then
+			return osiris_start()
+			
+			
+			
+			##100 Washington Square East, Room SB07##
+			
+		else if chosen_hvaclocation contains "100 Washington Square East Room SB07" then
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol1) & " -target /" with administrator privileges
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP5002SPA' -E -v lpd://'XXX.XX.96.131' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 5002' -D 'FCM-LanierMP5002SP-SB07'"
+			
+			success()
+			
+			
+			##100 Washington Square East, Room 303##
+			
+		else if chosen_hvaclocation contains "100 Washington Square East Room 303" then
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol4) & " -target /" with administrator privileges
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP3054A' -E -v lpd://'XXX.XX.96.132' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 3054' -D 'FCM-LanierMP3054-RM303'"
+			
+			success()
+			
+		end if
+		###### END NYU CENTRAL HVAC SHOP ######	
+		
+		######10 ASTOR PLACE ######		
+		
+	else if chosen_location contains "10 Astor Place" then
+		set chosen_astorlocation to choose from list {"ADCOMS", "CITO", "NYU ITS", "NYU ITS-ECOMS", "FCM"} with prompt "Select the Appropriate Department"
+		
+		if chosen_astorlocation is false then
+			return osiris_start()
+			
+			
+			
+			#### NYU ADCOMS ####
+			
+		else if chosen_astorlocation contains "ADCOMS" then
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC4503A' -E -v lpd://'XXX.XX.168.161' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C4503' -D 'ITS-414Copier'"
+			
+			success()
+			
+			#### NYU CITO ####
+			
+		else if chosen_astorlocation contains "CITO" then
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503A' -E -v lpd://'XXX.XX.171.52' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'ITS-504Copier'"
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503B' -E -v lpd://'XXX.XX.171.53' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'ITS-503Copier'"
+			
+			success()
+			
+			
+			#### NYU FCM ####
+			
+		else if chosen_astorlocation contains "FCM" then
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol2) & " -target /" with administrator privileges
+			
+			do shell script "installer -verbose -pkg " & (quoted form of vol1) & " -target /" with administrator privileges
+			
+			
+			##FCM, Room 716##
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP6002SPA' -E -v lpd://'XXX.XX.107.43' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 6002' -D 'FCM-716Copier'"
+			
+			##FCM, Outside Room 729##
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC4503A' -E -v lpd://'XXX.XX.107.44' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C4503' -D 'FCM-729Copier'"
+			
+			
+			##FCM, 7th Fl Coridor##
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503A' -E -v lpd://'XXX.XX.107.45' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'FCM-7THCorridorCopier'"
+			
+			
+			##FCM, 6th Floor Corridor (1)##
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMP6002SPB' -E -v lpd://'XXX.XX.107.46' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 6002' -D 'FCM-6THCorridorCopier1'"
+			
+			
+			##FCM, 6th Floor Corridor (2)##
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC4503B' -E -v lpd://'XXX.XX.107.47' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C4503' -D 'FCM-6THCorridorCopier2'"
+			
+			
+			##FCM, 6th Floor West Wing##
+			
+			do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503B' -E -v lpd://'XXX.XX.107.48' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'FCM-6THWestWingCopier'"
+			
+			success()
+			
+		end if
+		
+		######### END FCM ###########		
+		
+		
+		####### END 10 ASTOR PLACE ######	
+		
+		
+		
+		######HUMAN RESOURCES 17TH STREET######	
+		
+	else if chosen_location contains "Human Resources 17th Street 1st Floor" then
+		
+		do shell script "installer -verbose -pkg " & (quoted form of vol1) & " -target /" with administrator privileges
+		
+		do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+		
+		do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503B' -E -v lpd://'XXX.XX.63.75' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'HR-GLCOPIER3'"
+		
+		do shell script "/usr/sbin/lpadmin -p 'LanierMPC5503A' -E -v lpd://'XXX.XX.63.74' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C5503' -D 'HR-GLCOPIER2'"
+		
+		do shell script "/usr/sbin/lpadmin -p 'LanierMP6002SPA' -E -v lpd://'XXX.XX.63.73' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP 6002' -D 'HR-GLCOPIER1'"
+		
+		success()
+		
+		
+		
+		######END HUMAN RESOURCES 17TH STREET######		
+		
+		###### INTERNAL AUDIT 17TH STREET ######	
+		
+	else if chosen_location contains "Internal Audit 17th Street 3rd Floor" then
+		
+		do shell script "installer -verbose -pkg " & (quoted form of vol3) & " -target /" with administrator privileges
+		
+		do shell script "/usr/sbin/lpadmin -p 'LanierMPC4503A' -E -v lpd://'XXX.XX.63.76' -P '/Library/Printers/PPDs/Contents/Resources/LANIER MP C4503' -D 'IA-391COPIER'"
+		
+		success()
+		
+		###### END INTERNAL AUDIT 17TH STREET ######	
+		
+		
+	end if
+	
+	######END CHOOSE LOCATION######	
+	
+end osiris_start
